@@ -5,6 +5,9 @@ import re
 from dotenv import load_dotenv
 import logging
 import google.generativeai as genai
+import threading
+import http.server
+import socketserver
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -14,6 +17,7 @@ logger = logging.getLogger('discord_bot')
 load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')  # Add your Google AI API key to .env file
+PORT = int(os.environ.get('PORT', 8080))  # Get port from environment or use 8080 as default
 
 # Configure Google AI Studio
 if GOOGLE_API_KEY:
@@ -63,6 +67,24 @@ KEYWORDS = {
     'python': 'Python is a great programming language!',
     'discord': 'Discord bots are fun to make!'
 }
+
+# Simple HTTP request handler for the web server
+class SimpleHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(b'Discord bot is running!')
+    
+    def log_message(self, format, *args):
+        # Suppress logging of HTTP requests to avoid cluttering the console
+        return
+
+def start_http_server():
+    """Start an HTTP server to keep Render happy"""
+    with socketserver.TCPServer(("", PORT), SimpleHTTPRequestHandler) as httpd:
+        logger.info(f"HTTP server started on port {PORT}")
+        httpd.serve_forever()
 
 @bot.event
 async def on_ready():
@@ -202,4 +224,8 @@ if __name__ == "__main__":
     if not DISCORD_TOKEN:
         logger.error("No Discord token found. Please set DISCORD_TOKEN in your .env file.")
     else:
+        # Start HTTP server in a separate thread
+        server_thread = threading.Thread(target=start_http_server, daemon=True)
+        server_thread.start()
+        logger.info(f"Starting Discord bot")
         bot.run(DISCORD_TOKEN)

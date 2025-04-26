@@ -234,11 +234,11 @@ async def info(ctx):
     """Provides information about the bot"""
     info_embed = discord.Embed(
         title="Bot Information",
-        description="I'm a helpful Discord bot created with Discord.py!",
+        description="I'm a helpful Discord bot created by Bibek Bhattarai!",
         color=discord.Color.blue()
     )
     
-    info_embed.add_field(name="Creator", value="Your Name", inline=True)
+    info_embed.add_field(name="Creator", value="Bibek Bhattarai", inline=True)
     info_embed.add_field(name="Version", value="1.0", inline=True)
     info_embed.add_field(name="Library", value=f"discord.py {discord.__version__}", inline=True)
     info_embed.add_field(name="Commands", value="Use `!help` for a list of commands", inline=False)

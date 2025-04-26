@@ -1,4 +1,4 @@
-import bot
+import discord
 from discord.ext import commands
 import os
 import re
@@ -50,7 +50,7 @@ else:
     model = None
 
 # Define intents
-intents = bot.Intents.default()
+intents = discord.Intents.default()
 intents.message_content = True  # Need this to read message content
 
 # Create bot instance with a command prefix and intents
@@ -71,8 +71,8 @@ async def on_ready():
     logger.info(f'Bot is connected to {len(bot.guilds)} guilds')
     
     # Setting bot status
-    await bot.change_presence(activity=bot.Activity(
-        type=bot.ActivityType.listening, 
+    await bot.change_presence(activity=discord.Activity(
+        type=discord.ActivityType.listening, 
         name="!commands for help"
     ))
 
